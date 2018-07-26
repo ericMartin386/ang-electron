@@ -1,0 +1,11 @@
+<mat-toolbar color="primary">
+  <mat-toolbar-row><span>Software Update Example App</span></mat-toolbar-row>
+  <mat-toolbar-row><span>Version: {{version}}</span></mat-toolbar-row>
+</mat-toolbar>
+<mat-toolbar color="secondary">
+  <mat-toolbar-row>
+    <button mat-button routerLink="agent" routerLinkActive="active">Agent</button>
+    <button mat-button routerLink="agent-installer" routerLinkActive="active">Agent Installer</button>
+  </mat-toolbar-row>
+</mat-toolbar>
+<router-outlet></router-outlet>
