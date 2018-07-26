@@ -6,6 +6,11 @@ const {autoUpdater} = require("electron-updater");
 
 let win
 
+function sendStatusToWindow(text) {
+  log.info(text);
+  win.webContents.send('message', text);
+}
+
 let template = []
 if (process.platform === 'darwin') {
   // OS X
@@ -52,8 +57,9 @@ function createWindow () {
    // win.webContents.openDevTools()
 
    log.info('about to look for updates...');
-   log.info(autoUpdater);
-   autoUpdater.checkForUpdatesAndNotify();
+   //log.info(autoUpdater);
+   //autoUpdater.checkForUpdatesAndNotify();
+   autoUpdater.checkForUpdates();
 
   win.on('closed', () => {
     win = null
@@ -76,15 +82,19 @@ app.on('activate', () => {
 })
 
 autoUpdater.on('checking-for-update', () => {
+    sendStatusToWindow('Checking for update...');
     log.info('Checking for update...');
   })
   autoUpdater.on('update-available', (info) => {
+    sendStatusToWindow('Update available.');
     log.info('Update available.');
   })
   autoUpdater.on('update-not-available', (info) => {
+    sendStatusToWindow('Update not available.');
     log.info('Update not available.');
   })
   autoUpdater.on('error', (err) => {
+    sendStatusToWindow('Error in auto-updater.');
     log.info('Error in auto-updater. ' + err);
   })
   autoUpdater.on('download-progress', (progressObj) => {
@@ -94,5 +104,13 @@ autoUpdater.on('checking-for-update', () => {
     log.info(log_message);
   })
   autoUpdater.on('update-downloaded', (info) => {
+    sendStatusToWindow('Update downloaded; will install in 5 seconds');
     log.info('Update downloaded');
+
+    // Wait 5 seconds, then quit and install
+    // In your application, you don't need to wait 5 seconds.
+    // You could call autoUpdater.quitAndInstall(); immediately
+    setTimeout(function() {
+      autoUpdater.quitAndInstall();  
+    }, 5000)
   });

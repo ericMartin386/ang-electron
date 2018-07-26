@@ -1,0 +1,1 @@
+start .\node_modules\.bin\http-server.cmd ./wwwroot/ -p 8080
