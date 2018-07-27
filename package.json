@@ -1,6 +1,6 @@
 {
   "name": "electron-updater",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "a test for electron self-updater",
   "author": "Eric Martin",
   "license": "MIT",
@@ -84,6 +84,10 @@
     },
     "mac": {
       "category": "cross-platform-desktop"
+    },
+    "nsis":{
+      "createStartMenuShortcut": true,
+      "createDesktopShortcut": "always"
     },
     "win": {
       "target": [
