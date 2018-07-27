@@ -48,6 +48,8 @@ function createWindow () {
 
     // load the dist folder from Angular
     log.info(path.join(__dirname, './dist/ang-electron/index.html'));
+
+  
     win.loadURL(url.format({
     pathname: path.join(__dirname, './dist/ang-electron/index.html'),
     protocol: 'file:',
@@ -55,7 +57,7 @@ function createWindow () {
   }))
 
   // Open the DevTools optionally:
-  win.webContents.openDevTools()
+  //win.webContents.openDevTools()
 
   //  log.info('about to look for updates...');
   //  autoUpdater.checkForUpdates();
@@ -65,7 +67,7 @@ function createWindow () {
   })
 }
 
-app.on('ready', createWindow)
+app.on('ready', startApi)
 
 
 app.on('window-all-closed', () => {
@@ -76,7 +78,7 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
   if (win === null) {
-    createWindow()
+    //startApi()
   }
 })
 
@@ -118,4 +120,23 @@ autoUpdater.on('checking-for-update', () => {
     
     log.info('about to look for updates...');
     autoUpdater.checkForUpdates();
-});
+  });
+
+  function startApi() {
+    var proc = require('child_process').spawn;
+    //  run server
+    //var apipath = path.join(__dirname, '.\\src\\api\\bin\\dist\\win\\api.exe')
+    var apipath = path.join(__dirname, '..\\src\\api\\bin\\dist\\win\\api.exe')
+    // if (os.platform() === 'darwin') {
+    //   apipath = path.join(__dirname, './/api//bin//dist//osx//Api')
+    // }
+    apiProcess = proc(apipath)
+  
+    apiProcess.stdout.on('data', (data) => {
+      log.info(`stdout: ${data}`);
+      if (win == null) {
+        createWindow();
+      }
+    });
+  }
+

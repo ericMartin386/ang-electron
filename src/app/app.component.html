@@ -4,10 +4,21 @@
   <mat-toolbar-row><span>Message: {{message}}</span></mat-toolbar-row>
   <mat-toolbar-row><button mat-button (click)="onClick()">Check and install update</button></mat-toolbar-row>
 </mat-toolbar>
+
 <mat-toolbar color="secondary">
   <mat-toolbar-row>
     <button mat-button routerLink="agent" routerLinkActive="active">Agent</button>
     <button mat-button routerLink="agent-installer" routerLinkActive="active">Agent Installer</button>
   </mat-toolbar-row>
 </mat-toolbar>
+
+
+From Web API:
+<ul>
+  <li *ngFor="let person of people">
+    First Name : {{person.FirstName}}
+    Last Name : {{person.LastName}}
+</ul>
+
+
 <router-outlet></router-outlet>

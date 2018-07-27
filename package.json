@@ -1,6 +1,6 @@
 {
   "name": "electron-updater",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "a test for electron self-updater",
   "author": "Eric Martin",
   "license": "MIT",
@@ -76,8 +76,8 @@
       "node_modules"
     ],
     "extraResources": {
-      "from": "../api/bin/dist/",
-      "to": "api/bin/dist/",
+      "from": "src/api/bin/dist/",
+      "to": "src/api/bin/dist/",
       "filter": [
         "**/*"
       ]
