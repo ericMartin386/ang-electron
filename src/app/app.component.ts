@@ -1,7 +1,6 @@
 import { Component, OnInit  } from '@angular/core';
 
 declare var require: any;
-declare var electron: any;
 
 @Component({
   selector: 'app-root',
@@ -15,9 +14,10 @@ export class AppComponent implements OnInit {
 
   public ngOnInit() {
     this.version = require( '../../package.json').version;
+  }
 
-    electron.ipcRenderer.on('message', function(event, text) {
-      this.message = text;
-    });
+  public onClick() {
+    const { ipcRenderer } = (<any>window).require('electron');
+    ipcRenderer.send('request-software-update', {});
   }
 }

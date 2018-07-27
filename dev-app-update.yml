@@ -1,0 +1,4 @@
+version: 1.0.0
+provider: generic
+url: http://localhost:8080
+sha2: 6b37906f66f2430d6d67eed3588dc688c52a731093b51679e93cfd9cb6000228

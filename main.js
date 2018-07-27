@@ -1,4 +1,4 @@
-const {app, BrowserWindow, Menu} = require('electron')
+const {app, BrowserWindow, Menu, ipcMain} = require('electron')
 const path = require('path')
 const url = require('url')
 const log = require('electron-log');
@@ -47,19 +47,18 @@ function createWindow () {
     win = new BrowserWindow({width: 800, height: 600})
 
     // load the dist folder from Angular
+    log.info(path.join(__dirname, './dist/ang-electron/index.html'));
     win.loadURL(url.format({
-    pathname: path.join(__dirname, 'dist/ang-electron/index.html'),
+    pathname: path.join(__dirname, './dist/ang-electron/index.html'),
     protocol: 'file:',
     slashes: true
   }))
 
   // Open the DevTools optionally:
-   // win.webContents.openDevTools()
+  win.webContents.openDevTools()
 
-   log.info('about to look for updates...');
-   //log.info(autoUpdater);
-   //autoUpdater.checkForUpdatesAndNotify();
-   autoUpdater.checkForUpdates();
+  //  log.info('about to look for updates...');
+  //  autoUpdater.checkForUpdates();
 
   win.on('closed', () => {
     win = null
@@ -114,3 +113,9 @@ autoUpdater.on('checking-for-update', () => {
       autoUpdater.quitAndInstall();  
     }, 5000)
   });
+
+  ipcMain.on('request-software-update', (event, arg) => {
+    
+    log.info('about to look for updates...');
+    autoUpdater.checkForUpdates();
+});
