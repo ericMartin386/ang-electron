@@ -1,34 +1,17 @@
-const {app, BrowserWindow, Menu, ipcMain} = require('electron')
+const {app, BrowserWindow, Tray, Menu, ipcMain} = require('electron')
 const path = require('path')
 const url = require('url')
 const log = require('electron-log');
 const {autoUpdater} = require("electron-updater");
+const trayIconPath = path.join(__dirname, './dist/ang-electron/update.ico');
+const Positioner = require('electron-positioner');
 
-let win
+let win = null
+let tray = null
 
 function sendStatusToWindow(text) {
   log.info(text);
   win.webContents.send('message', text);
-}
-
-let template = []
-if (process.platform === 'darwin') {
-  // OS X
-  const name = app.getName();
-  template.unshift({
-    label: name,
-    submenu: [
-      {
-        label: 'About ' + name,
-        role: 'about'
-      },
-      {
-        label: 'Quit',
-        accelerator: 'Command+Q',
-        click() { app.quit(); }
-      },
-    ]
-  })
 }
 
 autoUpdater.logger = log;
@@ -40,31 +23,59 @@ function sendStatusToWindow(text) {
     win.webContents.send('message', text);
   }
 
-function createWindow () {
-    const menu = Menu.buildFromTemplate(template);
-    Menu.setApplicationMenu(menu);
+  function quitApp() {
+    app.quit();
+  }
 
-    win = new BrowserWindow({width: 800, height: 600})
+  function createTray(){
+    const contextMenu = Menu.buildFromTemplate([
+      {label: 'Quit', click: quitApp },
+    ])
+    
+    tray = new Tray(trayIconPath);
+    tray.setToolTip = 'Angular Updater';
+    tray.setContextMenu(contextMenu)
+
+    tray.on('click', (event, bounds) => {
+     showWindow(bounds);
+    });
+
+    tray.on('double-click', (event, bounds) => {
+      showWindow(bounds);
+     });
+  }
+
+function showWindow(bounds) {
+  let positioner = new Positioner(win);
+  positioner.move('trayBottomRight', bounds)
+    
+  win.show();
+}
+
+function createWindow() {
+  if (win == null) {
+    win = new BrowserWindow({width: 200, height: 400, show: false, frame: false, resizable: false})
 
     // load the dist folder from Angular
     log.info(path.join(__dirname, './dist/ang-electron/index.html'));
 
   
     win.loadURL(url.format({
-    pathname: path.join(__dirname, './dist/ang-electron/index.html'),
-    protocol: 'file:',
-    slashes: true
-  }))
+      pathname: path.join(__dirname, './dist/ang-electron/index.html'),
+      protocol: 'file:',
+      slashes: true
+    }));
 
-  // Open the DevTools optionally:
-  //win.webContents.openDevTools()
+    // Open the DevTools optionally:
+    //win.webContents.openDevTools()
 
-  //  log.info('about to look for updates...');
-  //  autoUpdater.checkForUpdates();
+    //  log.info('about to look for updates...');
+    //  autoUpdater.checkForUpdates();
 
-  win.on('closed', () => {
-    win = null
-  })
+    win.on('blur', () => {
+      win.hide();
+    });
+  }
 }
 
 app.on('ready', startApi)
@@ -73,12 +84,6 @@ app.on('ready', startApi)
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
-  }
-})
-
-app.on('activate', () => {
-  if (win === null) {
-    //startApi()
   }
 })
 
@@ -134,9 +139,9 @@ autoUpdater.on('checking-for-update', () => {
   
     apiProcess.stdout.on('data', (data) => {
       log.info(`stdout: ${data}`);
-      if (win == null) {
-        createWindow();
-      }
+      
+      createTray();
+      createWindow();
     });
   }
 
